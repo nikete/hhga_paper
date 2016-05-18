@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage{nips_2016}
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2016}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\title{Learning to gentoype}
+
+\author{
+Nicol\'as Della Penna
+\And
+Erik Garrison \\
+} %equal contributors
+
+
+The FDA is currently running a series of challenges on genotyping accuracy.
+
+A system that combines two complementary genotyping methods, freebayes and fermkit, and achieves state of the art peofmrance.
+Beyong the features provided by the two udnerlying callers, a crucial feature is a representation of the alingments, inspired by the graphical user interfaces used that are used in debbuging alignemts.
+
+The performance is comparable to that achieved by GATK with the recomended methodology; it offers several adavantges; libre, much smaller human effort, tunable to new sequencing tenchnologies,  
+
+
+%Application papers should describe your work on a "real" as opposed to "hypothetical" application; specifically, it should describe work that has direct relevance to, and addresses the full complexity of, solving a non-trivial problem. Authors are also encouraged to convey insight about the problem, algorithms, and/or application
+
+The combination of the two strategies is much stronger than either one individually; this is due to TODO:E
+
+
+% elucidate (through an ablative analysis/lesion analysis, which removes one component of an algorithm at a time) which were the key components of the system needed to get the application to work. 
+
+The features provided by the two underlying aligners can be combined to make a a good genotyper (TODO:N&E keep s q ss)
+
+
+%A NIPS application paper should be comparable in quality to paper in the corresponding application domain conference: for example, a text paper should be acceptable to SIGIR, EMNLP, or other appropriate conference Application papers should not only present concrete application results, but also contain at least one of the below elements:
+
+%Applications that couldn't previously be done, at all, or on this scale
+TODO:E can we argue somethign of what we are doing could be done before? at least not with libre software? or possibly theres some way to argue this.
+
+
+%Techniques shown to be uniquely fitted to specific popular applications, leading to improved performance or more accurate solutions
+%our strong point
+
+%Insights that, from the perspective of machine learning, distinct applications X and Y, whose respective users have never talked to each other, are the same.
+%cant see anythign like this, but leaving it for inspiration
+
+
+\section{Pipeline}
+
+\section{Learning}
+
+add cites to the ect (compare performance to oaa) 
+
+add cites to vw, value of quick turn around in experimentation, value of quadratics.
+
+\section{Results}
+
+Highest precision submission among those that explicitly dont use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate fiel submitte,d as well as several methods whose peroformance is unbelievably good TODO: show more explcitily why t is implausible, and where the degree to which the adjustments are tuned to roduce good results in the evaluation set is left unsaid.}
+
+ablation:
+--keep s -q ss
+--keep m -q mm
+??
+-- varying ngram length
+-- varying aln N
+-- varrying 
+-- effect of using "clever" featuranmes for aln relative to just some natural ordering.
+
+ideal way to present this is as a matrix, shoudl be doable in terms of using --keep and --ignroe and different a-n iterations of the features.
+
+\section{Conclusion}
+
+
+\section{Further Work}
+1000G
+
+\section{references}
+
+\end{document}
+
+
