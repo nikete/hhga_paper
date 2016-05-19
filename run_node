@@ -1,0 +1,10 @@
+#!/bin/bash
+
+input=$1
+unique_id=$2
+name=$3
+args=$4
+
+mkdir -p $name
+date >$name.started
+paste <(seq 0 29) <(find $input -type f | grep gz$ ) | parallel -j 32 'dir='$name'; id=$(echo {} | cut -f 1); chunk=$(basename $(echo {} | cut -f 2)); echo $id, $chunk ; vw --total 30 --node $id --unique_id '$unique_id' -d '$input'/$chunk --cache_file $dir/$chunk.cache -k --passes 20 --ect 7 -b 23 '$args' --span_server localhost $(if [[ $id -eq 0 ]]; then echo -f '$name'.model --save_per_pass ; fi) 2>'$name'.$id.log'
