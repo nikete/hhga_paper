@@ -1,0 +1,15 @@
+3f1c --keep s -q ss
+6678 --keep r -q rr
+7d9d --keep h -q hh
+cf89 --keep a -q aa
+a581 --keep k -q kk
+85e8 --keep m -q mm
+140f --keep ms -q mm -q ss -q ms
+7a6a --keep km -q kk -q mm -q km
+7a24 --keep kms -q kk -q km -q mm -q ms -q ss
+0031 --keep kmsa -q kk -q km -q mm -q ms -q ss
+bd23 --keep kmshr -q kk -q km -q mm -q ms -q ss -q hr
+10d3 --keep kmshr -q kk -q km -q mm -q ms -q ss -q hr --ngram 2
+b9fd --keep kmshr -q kk -q km -q mm -q ms -q ss -q hr --ngram 3
+431f --keep kmshra -q kk -q km -q mm -q ms -q ss -q hr --ngram 2
+4b31 --stage_poly --keep kmshr --batch_sz 2000000 --batch_sz_no_doubling
