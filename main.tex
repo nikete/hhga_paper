@@ -88,7 +88,7 @@ The PrecisionFDA challenge is a publicly-funded initiative to improve the qualit
 Its objective is to bring the same kind of rigorous public testing that has been used by the machine learning community to the medical genomics community.
 We have applied our approach to the initial phase of the challenge (the ``Consistency'' challenge) and achieve the highest precision of any method which explicitly did not use the truth set in any phase of the submission process.\footnote{There was an entry that achieves 100 \% precision and recall by simply repeating the evlaution set, which was sadly distributed at the beginning of the challenge. Other submissions provide no more than vague reference to a ``ML'' approach used to filter, and do not exclude the use of the truth set for final decision boundary selection.}
 
-Our models base approach achieving the highest precision in the initial challenge (The precision challenge) of an entry that explciitly does not use the evaluation set in its training or paramter tunning 
+%Our models base approach achieving the highest precision in the initial challenge (The precision challenge) of an entry that explciitly does not use the evaluation set in its training or paramter tunning 
 %TODO https://precision.fda.gov/comparisons/1030 is problematic since they claim not to be using the test set (for training, i cosen my words crefully nd i assume so did they) 
 
 
@@ -129,7 +129,93 @@ TODO can we argue somethign of what we are doing could be done before? at least 
 
 
 
-\section{Pipeline from sequencing machine to dataset}
+\section{From sequencing machine to feature representation}
+
+We transform the short reads derived from an Illumina sequencing platform into a feature space representation suitable for use by generic machine learning techniques in two phases.
+In the first phase, we use standard techniques for the processing of sequencing data to project sequencing information from a new sample onto the reference genome.
+We then use alignment and assembly based genotyping programs to derive a list of putatively variable sites and non-reference alleles at these sites.
+In the second phase, we convert the alignments, assembly, and candidate alleles derived from the first phase into a text-based feature representation compatible with the Vowpal Wabbit.
+The two steps are decoupled, allowing us to change the inputs to the feature space transformation by utilizing other tools or sources for candidate alleles.
+The process can thus be understood as a generic ensemble genetic variant detection and genotyping platform, however in this application we explore the use of only a small set of sources for this information.
+
+\subsection{Alignment, assembly, and variant calling}
+
+We align reads to a reference genome using {\tt bwa mem} \cite{li2013bwamem} and mark PCR duplicates with {\tt bamsormadup} \cite{tischler2014biobambam}.
+We then use {\tt freebayes} \cite{garrison2012haplotype} to derive candidate alleles and genotypes for all sites where we observe more than 2 reads supporting a non-reference allele that comprising at least 5\% of the sequencing data at the locus.
+In parallel, we generate an assembly of the raw sequencing reads using {\tt fermikit} \cite{li2015fermikit}.
+We then map uniquely contiguous stretches of non-branching sequence in the overlap graph (unitigs) back to the reference genome, and use these alignments to identify candidate alleles with a genotyping approach implemented in the {\tt fermikit} toolchain.
+In addition to a set of per-site annotations about the read evidence that they are presented, both {\tt fermikit} and {\tt freebayes} provide a quality estimate in their outputs which is approximately the posterior probability of variation at the locus under their Bayesian models.
+We threshold the results at an extremely low posterior probability ($\approx 10^{-8}$) so as to certain false positives that only increase the computational burden of learning.\footnote{When comparing to the NIST Genome in a Bottle truth set we observed no true positives in this region of the data.}
+Finally, use tools in {\tt vcflib} to merge the results into a single set of candidates \cite{vcflibgit}, retaining software level annotations provided by both systems.
+
+This toolchain is the simplest that we are aware of that combines the two main forms of genotyping in common use.
+{\tt freebayes} implements a haplotype-based genetic variant detection process that examines only reads locally mapped to a particular locus, and is limited to detecting genetic variants that are approximately the same size as a single read.
+This provides in high sensitivity to small variation.
+In contrast, {\tt fermikit} compresses sequencing data into a string graph \cite{myers2005}, then projects the unique portions of this graph onto the reference to find potential sequence variants.
+The compression reduces the sensitivity of the method to shorter sequence variants, which resemble sequencing errors, but through assembly of long stretches of DNA it is able to detect very large sequence variants, such as insertions and deletions of 10s of thousands of base pairs.
+Both methods and the integration process we use are fully implemented using free software with permissive licensing, unlike similar solutions such as the {\tt GATK} \cite{gatk2011}, which will enable their free use by other researchers.
+
+\subsection{A generic feature representation for genotyping}
+
+Existing learning techniques to approximate $f(S) \to G$ only use aggregate statistics describing $S$ at the level of a single genomic site.
+For instance, SNPSVM applies a support vector machine to site level annotations such as read depth and mean sequencing base quality \cite{o2013support}.
+The {\tt GATK} Variant Quality Score Recalibrator (GATK-VQSR) uses a very similar feature space, but develops a site level quality ``recalibration'' by applying a guassian mixture model built from distributions learned on many genomes to estimate outlier variants given a known set of true positives.
+The full read information $S$ is apparently considered to expensive to directly use as an input to learning.
+
+However, we observed that bioinformaticians would often evaluate the quality of genotyping results using visual representations of read alignments such as those implemneted in {\tt IGV} or {\tt samtools tview} \cite{robinson2011integrative, samtools}.
+The human-driven assertion that the site was ``good'' or ``bad'' based on the appearance of the alignments suggested that we could learn to genotype directly from the alignments.
+Following this inspiration, we designed a feature representation that retains all relevant features of $S$.
+We implement this transformation in a software tool that consumes alignments (in BAM format), candidate variants (in VCF format), a window size parameter $w$, and a maximum depth $d$ to produce a feature representation for each candidate containing a description of: the reference genome; candidate alleles from the VCF file; alignments and their matches to the candidate alleles and reference; software provided annotations from the VCF file; and a novel compression of the sequencing data against a sequence graph implied by the variant record.
+
+\subsubsection{The alignment matrix}
+
+% hra
+
+At each locus we generate a mutually gapped reference-based multiple sequence alignment (MSA) of the alignments, reference, and candidate alleles from the VCF file using the same algorithm as that implemented in {\tt samtools tview}.
+We build the matrix using the alphabet $\{ {\tt A, T, G, C, N, U, M, R, S} \}$.
+$\{ {\tt A, T, G, C} \}$ represent the standard DNA bases where the alignment suggests a candidate single base change (SNP), ${\tt N}$ is a degenerate character that could represent any of the standard bases, ${\tt U}$ is a gap character used to pad the alignment matrix where sequences have relative insertions or deletions (indels), ${\tt M }$ indicates missing data, ${\tt R}$ represents a reference-matching base in an alignment, and ${\tt S}$ indicates a ``soft clip'' or insertion at the beginning or end of an alignment.
+This MSA is represented in matrix form, with its width equal to the window size and depth bounded by the number of alignments or an optional parameter that caps the number of alignments passed through the feature transformation.
+
+To build the mutually gapped MSA, we first record all unique edits between the reference genome and the alignments.
+Then, we determine the edit with the longest insertion length relative to the reference at each position and gap the alignments and reference at that position by adding the gap character ${\tt U}$ to them where their sequence length at the position is less than the maximum insertion length.
+We use the same gap character to indicate relative deletions between the alignments and the reference.
+We pad the alignments and candidate alleles with ${\tt M}$ where they do not fully overlap the window.
+
+The mutual gapping step may change the width and centering of the matrix, so we must re-center and bound it.
+We center the matrix such that the first base pair in the VCF record which we are working from is $w/2$ characters from the left hand edge of the window.
+Finally, we re-bound the matrix so that it contains $w$ columns.
+In effect, the variation is always represented in the right side of the matrix.
+
+We build the matrix in the same way for small variants such as SNPs as we do for longer variants such as indels.
+Although much of a longer indel will not be represented, we can use the first $w/2$ base pairs of it when genotyping.
+For a typical window size $w = 16$, this would provide us 8 base pairs of information from each alignment.
+As most indels are short, this will only harm resolution for long indels.
+
+\subsubsection{Candidate-relative alignment sort}
+
+% m
+
+We sort the alignment matrix in a way that provides an approximate invariance relative to matches between the alignments and the candidate alleles.
+For each alignment, we determine its pairwise identity with all candidate alleles.
+For each candidate allele, we then sort the alignments in descending order by their match rate to the candidate alleles.
+We then project the gapped alignments from the MSA into one matrix per allele where each matrix contains the top $d$ alignments sorted by match with that allele.
+Alignments that do not match any candidate allele are sorted into another matrix, as are alignments which contain soft clips.
+We sort soft clips separately because they are used by several methods to detect larger variants \cite{kronenberg2015wham}, which we hypothesized would help when genotyping variants detected by assembly with {\tt fermikit}.
+All alignment-relative features are provided in this sort order.
+We provide the match rates between each alignment and each candidate allele in the same order as the the alignments are sorted in the candidate-relative invariant sort.
+
+\subsubsection{Software-provided annotations}
+
+% s
+
+We map software provided annotations provided in the VCF directly into a feature space in our representation.
+Thes features include the estimated posterior probability of variation at the locus, the read depth, the sum of base qualities in the alignments, and other aggregate point statistics that the method developer has provided.
+
+\subsubsection{Variation graph compression}
+
+% k
+
+\subsection{Data sources for PrecisionFDA}
 
 % notes from precisionFDA
 
@@ -141,6 +227,8 @@ The union set of candidate variant calls using alignment (bwa mem and freebayes)
 These candidate loci are labeled with their genotype status in the NIST Genome in a Bottle v2.19 truth set. 
 
 TODO: add description of how the different featurespaces we keep are constructed.
+
+
 
 \section{Learning}
 
