@@ -42,12 +42,11 @@ Erik Garrison \\
 \maketitle
 
 \begin{abstract}
-
   We present a process to transform the sequencing information used for genotyping new individuals into a feature representation that is suitable for experimentation in existing machine learning frameworks.
-  The system is simple, has a fixed memory footprint, and can process millons of candidates per minute on a commodity compute cluster.
-  We use an ablation study to explore the components of our feature representation that are important for good genotyping results.
-  We demonstrate state of the art performance via participation in the first public competition focused on the genotyping task.
-  
+  This allows us to learn to genotype using data from existing sequenced genomes.
+  The system is simple, has a fixed memory footprint, and can process millions of candidates per minute on a commodity compute cluster.
+  We use an ablation study to explore the components of our feature representation that are important for good genotyping results
+  We demonstrate state of the art performance via participation in the first public competition focused on genotyping.
 \end{abstract}
 
 \section{Introduction}
@@ -162,11 +161,11 @@ We threshold the results at an extremely low posterior probability ($\approx 10^
 Finally, use tools in {\tt vcflib} to merge the results into a single set of candidates \cite{vcflibgit}, retaining software level annotations provided by both systems.
 
 This toolchain is the simplest that we are aware of that combines the two main forms of genotyping in common use.
-{\tt freebayes} implements a haplotype-based genetic variant detection process that examines only reads locally mapped to a particular locus, and is limited to detecting genetic variants that are approximately the same size as a single read.
+{\tt freebayes} implements a haplotype-based genetic variant detection process that examines only reads locally mapped to a particular locus, and is limited to detecting genetic variants that are smaller than the size of a single read.
 This provides in high sensitivity to small variation.
 In contrast, {\tt fermikit} compresses sequencing data into a string graph \cite{myers2005}, then projects the unique portions of this graph onto the reference to find potential sequence variants.
 The compression reduces the sensitivity of the method to shorter sequence variants, which resemble sequencing errors, but through assembly of long stretches of DNA it is able to detect very large sequence variants, such as insertions and deletions of 10s of thousands of base pairs.
-Both methods and the integration process we use are fully implemented using free software with permissive licensing, unlike similar solutions such as the {\tt GATK} \cite{gatk2011}, which will enable their free use by other researchers.
+Both methods and the integration process we use are fully implemented using free software with permissive licensing, unlike similar solutions such as the {\tt GATK} \cite{gatk2011}, which will enable their free use by other researchers and developers in both academia and industry.
 
 \subsection{A generic feature representation for genotyping}
 
@@ -315,7 +314,7 @@ For the very largest models (those that include quadratic features of the allele
 The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models (thousands of CPU core hours).
 
 Error-correcting tournaments \citep{beygelzimer2009error} where used,  despite the small number of classes, this showed better performance in the holdout than the standard one against all reductions in our initial experiments.
-Comparisons of our final models show that the performance with respect to the more standard one is withing 0.01\% of each other on binary loss.
+Comparisons of our final models show that the performance with respect to the more standard one is within 0.01\% of each other on binary loss.
 
 %Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
 
