@@ -295,26 +295,10 @@ Feature hashing and stochastic gradient descent using adaptive normalized and in
 
 \section{Results}
 
-Highest precision submission among those that explicitly dont use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate fiel submitte,d as well as several methods whose peroformance is unbelievably good TODO: show more explcitily why t is implausible, and where the degree to which the adjustments are tuned to produce good results in the evaluation set is left unsaid.}
+Our best model achieved the highest precision submission among those that explicitly dont use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate fiel submitte,d as well as several methods whose peroformance is unbelievably good TODO: show more explcitily why t is implausible, and where the degree to which the adjustments are tuned to produce good results in the evaluation set is left unsaid.}
 
-\subsection{Baseline}
+\subsection{Baselines \& Ablations }
  
- --ignore sg --ect 7 -d robots134n.shuf.hhga.gz -f allbutsgrobots.model --passes 100 -c
- average loss = 0.016359 h                       
-vial1 0.016243
-
-average loss = 0.007829
-total feature number = 2163159720
-vw -t -i ffoz.model -d vial1l.hhga.gz  18075.76s user 16.10s system 104% cpu 4:47:43.55 total
-
-%TODO make robots134o.30 holdout regions ?
-% name=qqonly; input=robots134o.30; mkdir -p $name; date >$name.started; paste <(seq 0 29) <(find $input -type f | grep gz$ ) | parallel -j 30 'dir='$name'; id=$(echo {} | cut -f 1); chunk=$(basename $(echo {} | cut -f 2)); echo $id, $chunk ; vw --total 30 --node $id --unique_id 99763211 -d '$input'/$chunk --cache_file $dir/$chunk.cache  --ect 7  --passes 100 --compressed  --keep m -q qq  --span_server localhost $(if [ $id -eq 0 ]; then echo -f '$name'.model --save_per_pass ; fi) 2>'$name'.$id.log' ; vw -t -i '$name'.model -d vial1 
-
-
-\subsection{Ablation}
-% all run for --passes 20 --ect 7 -b 23 and the holdout on
-% the train set with the regions removed
-%
 
 \begin{table}[]
   \centering
@@ -325,7 +309,7 @@ vw -t -i ffoz.model -d vial1l.hhga.gz  18075.76s user 16.10s system 104% cpu 4:4
     name & 0-1 loss & feature spaces & interactions & options \\ \hline
     Software-provided annotations & 0.012204 & s & ss & \\
     Reference  & 0.407825 & r & rr &\\
-    Read Alleles & 0.016569 & a & & \\
+    Alleles read & 0.016569 & a & & \\
     Haplotype & 0.416780 & h & hh & \\
     Variation graph compression & 0.035268 & k & kk & \\
     Candidate-relative alignment sort & 0.024088 & m & mm & \\
@@ -334,9 +318,9 @@ vw -t -i ffoz.model -d vial1l.hhga.gz  18075.76s user 16.10s system 104% cpu 4:4
     ... and software & 0.009639 & kms & kk  km  mm  ms  ss & \\
     ... and soft. and reads & 0.008795 & kmsa & kk  km  mm  ms  ss & \\
     with haplotypes & 0.009060 & kmshr & kk  km  mm  ms  ss  hr & \\
-    ....  & 0.009205 & kmshr & kk  km  mm  ms  ss  hr & ngram 2 \\
-    b9fd & 0.009368 & kmshr & kk  km  mm  ms  ss  hr & ngram 3 \\
-    431f & 0.008799 & kmshra & kk  km  mm  ms  ss  hr & ngram 2 \\
+    .... 2-grams  & 0.009205 & kmshr & kk  km  mm  ms  ss  hr & ngram 2 \\
+    ... 3-grams & 0.009368 & kmshr & kk  km  mm  ms  ss  hr & ngram 3 \\
+    ... allel and  & 0.008799 & kmshra & kk  km  mm  ms  ss  hr & ngram 2 \\
     4b31 & 0.012261 & kmshr & & stage-poly \\
     \hline
   \end{tabular}
