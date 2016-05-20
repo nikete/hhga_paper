@@ -42,12 +42,8 @@ Erik Garrison \\
 \maketitle
 
 \begin{abstract}
-a novel feature representation
-for a space which is hugely important in terms of production
-but has thus far not really had anything similar to work from
-freebayes and fermkit one liner
-enriched with features from gui inspired representation
-FDA state of the art
+
+
 \end{abstract}
 
 \section{Introduction}
@@ -295,18 +291,18 @@ Feature hashing and stochastic gradient descent using adaptive normalized and in
 
 \section{Results}
 
-Our best model achieved the highest precision submission among those that explicitly dont use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate fiel submitte,d as well as several methods whose peroformance is unbelievably good TODO: show more explcitily why t is implausible, and where the degree to which the adjustments are tuned to produce good results in the evaluation set is left unsaid.}
+The best model achieved the highest precision submission ( 99.57\%) among those that explicitly don't use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate file submitted as well as several methods whose performance is unbelievably good}
+The table bellow presents a range of models to provide a sense of the importance of the different features used.
+The loss is reported on held out regions of the genome. TODO: ref why
 
-\subsection{Baselines \& Ablations }
- 
 
 \begin{table}[]
   \centering
-  \caption{Ablation results}
+  \caption{Baselines \& Ablations }
   \label{ablation-results}
   \begin{tabular}{|l|l|l|l|l|}
     \hline
-    name & 0-1 loss & feature spaces & interactions & options \\ \hline
+    name & 0/1 loss & feature spaces & interactions & options \\ \hline
     Software-provided annotations & 0.012204 & s & ss & \\
     Reference  & 0.407825 & r & rr &\\
     Alleles read & 0.016569 & a & & \\
@@ -320,8 +316,8 @@ Our best model achieved the highest precision submission among those that explic
     with haplotypes & 0.009060 & kmshr & kk  km  mm  ms  ss  hr & \\
     .... 2-grams  & 0.009205 & kmshr & kk  km  mm  ms  ss  hr & ngram 2 \\
     ... 3-grams & 0.009368 & kmshr & kk  km  mm  ms  ss  hr & ngram 3 \\
-    ... allel and  & 0.008799 & kmshra & kk  km  mm  ms  ss  hr & ngram 2 \\
-    4b31 & 0.012261 & kmshr & & stage-poly \\
+    ... alle reads and 2 grams  & 0.008799 & kmshra & kk  km  mm  ms  ss  hr & ngram 2 \\
+    Growing polynomials & 0.012261 & kmshr & & stage-poly \\
     \hline
   \end{tabular}
 \end{table}
@@ -329,29 +325,6 @@ Our best model achieved the highest precision submission among those that explic
 % can't do ... maybe we report it -- effect of using "clever" featuranmes for aln relative to just some natural ordering.
 
 
-\section{Generalization}
-
-\subsection{Across sequencing runs}
-
-
-
-\subsection{Accross individuals}
-where there are actually reads we can use to train and test on
-
-%zcat 1kg/HG00403.hhga.gz | head -1000000 | grep 'aln0.4\|aln1.4\|aln2.4' | vw --ect 7 --ignore sg --cache_file x.cache -k --passes 10 -q kk -q mm -f x.model
-
-makes sure we have 4 alignments in at least one allele bin
-
-\subsection{Accross regions}
-there is a better way
-we can hold out specific regions
-but the individual
-at this level
-is DNA that was synthesized in a test tube
-
-it is not like there is something special about it
-we can show that we don't need to memorize sites
-TODO:SHOW
 
 that's enough to make a strong claim that you would generalize to a new sample with different variants in different places
 if you want to go so far
