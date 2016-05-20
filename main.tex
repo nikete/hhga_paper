@@ -43,6 +43,11 @@ Erik Garrison \\
 
 \begin{abstract}
 
+  We present a process to transform the sequencing information used for genotyping new individuals into a feature representation that is suitable for experimentation in existing machine learning frameworks.
+  The system is simple, has a fixed memory footprint, and can process millons of candidates per minute on a commodity compute cluster.
+  We use an ablation study to explore the components of our feature representation that are important for good genotyping results.
+  We demonstrate state of the art performance via participation in the first public competition focused on the genotyping task.
+  
 \end{abstract}
 
 \section{Introduction}
@@ -352,24 +357,24 @@ The variation graph compression is vastly more compact than the alignment featur
 
 
 
-that's enough to make a strong claim that you would generalize to a new sample with different variants in different places
-if you want to go so far
-obviously it has caveats but if you want to explore this that's the cleanest way
+%that's enough to make a strong claim that you would generalize to a new sample with different variants in different places
+%if you want to go so far
+%obviously it has caveats but if you want to explore this that's the cleanest way
 
-that DNA is a molecule and when a person has a variatn in a new position it is indistinguishable from another variant we held out from the current individual
+%that DNA is a molecule and when a person has a variatn in a new position it is indistinguishable from another variant we held out from the current individual
 
-the itner-individual comparison in the 1000G is fraught too
-because the samples were all genotyped in a massive joint assembly process
-so it's hard to claim they are independent
+%the itner-individual comparison in the 1000G is fraught too
+%because the samples were all genotyped in a massive joint assembly process
+%so it's hard to claim they are independent
 
 \section{Conclusion}
 
 Using simple, shallow learners, and leveraging the work that has been applied to large scale classification tasks combined with handcrafted feature representations, we show state of the art performance in genotyping task.
+We present the first method to solve this problem in a way that retains information about the source data through the feature trasnformation, development, and application of a model.
+Our experiments show that this information alone is suitable for use in a simple learner.
 
-
-
-\section{Further Work}
-incoporating 1000G
+%\section{Further Work}
+%incoporating 1000G
 
 
 %somehow bring in?
