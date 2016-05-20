@@ -264,11 +264,17 @@ This results in a weight $k$ for each allele node such that $k_i \in [0, 1] \for
 For the PrecisionFDA Consistency Challenge, participants were tasked with producing high-quality and reproducible genotyping results for a new sequencing data set derived from the canonical NA12878 reference cell line.
 In effect, the objective was to test the ability of methods to generalize across different sequencing runs.\footnote{An ongoing challenge, the ``Truth'' challenge, seeks to measure generalization across individuals. It will close on May 26th, so we are unable to provide results here.}
 
-For the FDA precision challenge, we trained the models using three previous Garvan sequencing runs on NA12878.\footnote{We used data available at https://www.garvan.org.au/research/kinghorn-centre-for-clinical-genomics/clinical-genomics/sequencing-services/sample-data for Robot\_1, Robot\_3, and Robot\_4.}
-These candidate loci are labeled with their genotype status in the NIST Genome in a Bottle v2.19 truth set for NA12878.
-
+To answer the challenge, we trained the models using three previous Garvan Institute sequencing runs on NA12878.\footnote{We used data available at https://www.garvan.org.au/research/kinghorn-centre-for-clinical-genomics/clinical-genomics/sequencing-services/sample-data for Robot\_1, Robot\_3, and Robot\_4.}
+We labeled the candidate loci with their genotype status in the NIST Genome in a Bottle v2.19 truth set for NA12878 and use the learning procedure described in \ref{sec:learning} to train a model using only the previously-available data from the Garvan Institute.
+We generated the feature transformation in the same manner for the challenge test data (Vial\_1), and derived labels for the candidates using the model trained on the previously-available data.
+Finally, we convert the results into the VCF format and uploaded them into the PrecisionFDA testing framework.
+There we used a remote comparison tool hosted by the organizers to evaluate the results.
+This provides three metrics: precision (the percent of correct genotypes in the total set), recall (the fraction of precise genotype and allele assignments out of the total possible in the truth set) and an F-measure that combines the two under the assumption of equal weight for false positives and false negatives.
+In our submission we achieve a precision of 99.54\%, recall of 98.91\% and an F-measure of 99.22\%.
+Furthermore, we achieve the highest precision of any group that explicitly did not use the truth set (Vial\_1) in selecting parameters or thresholds for the submission.
 
 \section{Learning}
+\label{sec:learning}
 
 The learning from the data is implemented without explicit regularization penalty. The capacity control is instead achieved by stopping the SGD when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
 The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
