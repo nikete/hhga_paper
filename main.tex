@@ -10,7 +10,7 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
-
+\usepackage{graphicx}
 
 
 \newcommand{\tell}{\ensuremath{\tilde{\ell}}}
@@ -185,6 +185,17 @@ The human-driven assertion that the site was ``good'' or ``bad'' based on the ap
 Following this inspiration, we designed a feature representation that retains all relevant features of $S$.
 We implement this transformation in a software tool that consumes alignments (in BAM format), candidate variants (in VCF format), a window size parameter $w$, and a maximum depth $d$ to produce a feature representation for each candidate containing a description of: the reference genome; candidate alleles from the VCF file; alignments and their matches to the candidate alleles and reference; software provided annotations from the VCF file; and a novel compression of the sequencing data against a sequence graph implied by the variant record.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=1.0\textwidth]{indel}
+\caption{\label{fig:indel}
+  A human-readable fragment of the feature space transformation at a candidate indel site.
+  The reference sequence is represented at top, the two candidate alleles from the VCF (allel1 is equal to the reference and the other features a relative deletion).
+  The alignment name which is derived from the match-invariant sort and the match features are shown to the right of the matrix.
+  Below the alignment matrix is a representation of the variation graph and software-derived features.
+}
+\end{figure}
+
 \subsubsection{The alignment matrix}
 
 % hra
@@ -262,7 +273,7 @@ This results in a weight $k$ for each allele node such that $k_i \in [0, 1] \for
 
 % notes from precisionFDA
 For the PrecisionFDA Consistency Challenge, participants were tasked with producing high-quality and reproducible genotyping results for a new sequencing data set derived from the canonical NA12878 reference cell line.
-In effect, the objective was to test the ability of methods to generalize across different sequencing runs.\footnote{An ongoing challenge, the ``Truth'' challenge, seeks to measure generalization across individuals. It will close on May 26th, so we are unable to provide results here.}
+In effect, the objective was to test the ability of methods to generalize across different sequencing runs.\footnote{An ongoing challenge, the ``Truth'' challenge, seeks to measure generalization across individuals. It will close on May 26th, 2016, so we are unable to provide results at the time of this submission.}
 
 To answer the challenge, we trained the models using three previous Garvan Institute sequencing runs on NA12878.\footnote{We used data available at https://www.garvan.org.au/research/kinghorn-centre-for-clinical-genomics/clinical-genomics/sequencing-services/sample-data for Robot\_1, Robot\_3, and Robot\_4.}
 We labeled the candidate loci with their genotype status in the NIST Genome in a Bottle v2.19 truth set for NA12878 and use the learning procedure described in \ref{sec:learning} to train a model using only the previously-available data from the Garvan Institute.
