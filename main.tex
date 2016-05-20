@@ -42,7 +42,10 @@ Erik Garrison \\
 \maketitle
 
 \begin{abstract}
-Genome sequencing is at the core of t
+
+We present a process to transform the sequencing information used for genotyping new individuals into a feature representation that 
+
+The system is simple, has a fixed memory footprint, and can process millons of candidates per minute on a commodity compute cluster.
 
 \end{abstract}
 
@@ -265,7 +268,32 @@ As we aim to obtain a relativistic description of the strength of match between 
 We then count the number of alignments mapping to each allele node, and normalize these counts by the total number of alignments mapping to any allele node.
 This results in a weight $k$ for each allele node such that $k_i \in [0, 1] \forall n_i \in N$ and $\sum_{i = 0}^{|A|} k_i = 1$, which we provide in the feature representation.
 
-\subsection{Application to PrecisionFDA Consistency Challenge}
+
+\section{Learning}
+\label{sec:learning}
+
+
+The learning is carried out with feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
+
+Each of the variables in the feature sets implemented above along with a quadratic terms for their values, and a set of cross interactions where, as well as 2-grams over the sequence like features  is included in a vector $x$.
+The hashing trick is used to carry out the projection.
+Stochastic gradient descent then optimizes a set of weights $w$ so as to:
+
+\begin{equation}
+  \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i) 
+  \label{eqn:objective}
+\end{equation}
+
+Note that this is without any explicit regularization penalty.
+Capacity control is instead carried out by stopping the iterations of the gradient descent when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
+For the very largest models (those that include quadratic features of the allele reads) the saturation of the hash space also potentially provides a for of capacity control. 
+The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models (thousands of CPU core hours).
+
+Error-correcting tournaments \citep{beygelzimer2009error} where used,  despite the small number of classes, this showed better performance in the holdout than the standard one against all reductions in our initial experiments.
+Comparisons of our final models show that the performance with respect to the more standard one is withing 0.01\% of each other on binary loss.
+
+
+\section{PrecisionFDA Consistency Challenge}
 
 % notes from precisionFDA
 For the PrecisionFDA Consistency Challenge, participants were tasked with producing high-quality and reproducible genotyping results for a new sequencing data set derived from the canonical NA12878 reference cell line.
@@ -280,33 +308,10 @@ This provides three metrics: precision (the percent of correct genotypes in the 
 In our submission we achieve a precision of 99.54\%, recall of 98.91\% and an F-measure of 99.22\%.
 Furthermore, we achieve the highest precision of any group that explicitly did not use the truth set (Vial\_1) in selecting parameters or thresholds for the submission.
 
-\section{Learning}
-\label{sec:learning}
+\section{Ablation}
 
-The learning from the data is implemented without explicit regularization penalty.
-Capacity control is instead carried out by stopping the iterations of the gradient descent when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
-The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
-
-
-%\begin{equation}
-%  \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i) 
-%  \label{eqn:objective}
-%\end{equation}
-
-%TODO CPU hours for the stage poly?
-%Where the feature vector $x$ incudes the different terms presented in the pipeline, 
-
-Error-correcting tournaments \citep{beygelzimer2009error} where used , suprisingly given the small number, 7, of classes showed better performance in the holdout than the standard one against all reductions. 
-Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
-
-
-
-\section{Results}
-
-The best model achieved the highest precision submission ( 99.57\%) among those that explicitly don't use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate file submitted as well as several methods whose performance is unbelievably good}
 The table bellow presents a range of models to provide a sense of the importance of the different features used.
-The loss is reported on held out regions of the genome. TODO: ref why
-
+The loss is reported on 100 held out regions of the genome on a different sample of the genome. 
 
 \begin{table}[]
   \centering
