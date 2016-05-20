@@ -57,23 +57,26 @@ FDA state of the art
 
 % TODO:why you care about genotyping,1 line.
 Genome sequencing has rapidly become a core observational process in biology and medicine.
-% (and what is "resequencing")
 Sequencing and assembling a genome \emph{de novo} is dramatically more expensive than \emph{re}sequencing, in which the fragments of a newly-sequenced genome are aligned against an existing assembled reference genome).
-% why do you need to genotype?
 As the error rates of sequencing methods are typically much higher than the rate of actual genetic variation, it is necessary to classify the candidate variations which are implied by the alignments on the basis of their veracity.
-Organisms (such as humans) frequently have two or more nearly-identical copies of each genetic locus, and as a result we reason about their genome in as a series of genotypes, which are multisets of alleles.\footnote{The same allele can occur more than once in diploids and polyploids.} 
-% TODO: what learning task is genotyping ;   classification number of possible allelic states, 
-Let $N$ be the number of genome copies at a genomic locus, $A$ be the set of alleleic states where an alleles is a sequence of DNA, and $E$ be the set of degenerate or unknown states.
-\emph{Genotyping} can be seen as an $N \times ( |A| + |E| )$-way classification task, in which sequencing information relevant to the locus is used to infer a genotype that gives rise to the sequencing data.
+Organisms (such as humans) frequently have two or more nearly-identical copies of each genetic locus, and as a result we reason about their genome in as a series of genotypes, which are multisets of alleles $G = \{ a_1, \ldots, a_N \}$.\footnote{The same allele can occur more than once in diploids and polyploids.} 
+% TODO: what learning task is genotyping ;   classification number of possible allelic states,
 
-Standard approaches TODO:which?cite to genome resequencing separate noise from sequencing data using Bayesian filters derived from idealized a-priori models of the genome.
+Let $N$ be the number of genome copies at a genomic locus, $A$ be the set of alleleic states where an alleles is a sequence of DNA, and $E$ be the set of degenerate or unknown states.
+We obtain sequencing information $S$ relevant to our task by aligning small fragments of DNA to a reference genome \cite{li2013bwamem} or by building an assembly graph that compresses the input sequencing data before contextualizing it relative to the reference \cite{myers2005, simpson2010, li2015fermikit, iqbal2012}.
+\emph{Genotyping} can be seen as an $N \times ( |A| + |E| )$-way classification task in which we use a model $f$ to obtain a mapping $f(S) \to G$.
+
+%We can genotype a sample 
+
+Standard approaches to developing $f$ use Bayesian filters derived from idealized \emph{a-priori} models of the genome  \cite{samtools, gatk2011, garrison2012haplotype, rimmer2014integrating, li2011stats}.
+%This approach is sensible where we have little prior information to inform $f$, but ..
 It is no longer the case that the best prior available for genome resequencing is one that we derive from first principles. 
-In humans, tremendous amounts of prior information which can be draw upon when examining a newly sequenced sample. 
-The 1000 Genomes Project (1000G), the Exome Aggregation Consortium (ExAC), the Human Genome Diversity Project (HGDP) and other large scale sequencing projects have sequenced hundreds of thousands of individuals, and where possible have deposited results into the public domain. TODO:add cites
-This gives rise to the possibility of training on existing data so as to learn a good mapping from the observed alignments to genotypes.
-To utilize this rapidly-deepening catalog of variation in a new individuals, we built a supervised learning task to genotype by example.
+Large scale genomic surveys have sequenced hundreds of thousands of humans, and where possible have deposited results into the public domain \cite{1000Gphase1, 1000g2015, exac2015, cavalli2005human, uk10k2015uk10k}.
+The NIST Genome in a Bottle consortium \cite{zook2014integrating} has developed a reference standard for genome resequencing based around NA12878 (a cell line derived from a HapMap participant \cite{gibbs2003international}), which provides an accurate set of labeled data for the evaluation of genomic analyses.
+Here, we develop a model capable of using these resources to learn a general model for genotyping.
+%To utilize this rapidly-deepening catalog of variation in a new individuals, we built a supervised learning task to genotype by example.
 % this has been attempted before, as in GATK VQSR or SNPsvm TODO: cites? do we beat VQSR?
-To attack this task we develop a novel set of feature representations, use the complementary strengths of two variant callers,  achieving state of the art performance.
+%To attack this task we develop a novel set of feature representations, use the complementary strengths of two variant callers,  achieving state of the art performance.
 
 % The system trained in this way, using the complementary strengths of two variant callers, freebayes and fermkit, combined with a novel set of feature representations inspired by genomic debugging tools and graphical reductions of genome variation
 
@@ -81,8 +84,11 @@ To attack this task we develop a novel set of feature representations, use the c
 %The goal of the FDA's first precisionFDA challenge is to engage the genomics community in advancing the quality standards in order to achieve more consistent results in the context of genetic tests (related to whole human genome sequencing), advancing the goal of better personalized care.
 %PrecisionFDA invites all innovators to take the challenge and assess their software on the supplied reference human datasets. Participation is voluntary, but instrumental in helping the community prepare for the coming genomic data revolution.
 
-The PrecisionFDA challenge is a publicly-funded initiative to bring the same kind of rigorous public testing that has been used by the machine learning community to the medical genomics community.
-Our models base approach achieving the highest precision in the initial challenge (The precision challenge) of an entry that explciitly does not use the evaluation set in its training or paramter tunning \footnote{ There was an entry that achieves 100 \% precision and recall by simply repeating the evlaution set, which was sadly distributed at the beginning of the challenge.}
+The PrecisionFDA challenge is a publicly-funded initiative to improve the quality and consistency of genetic tests through the engagement of the genomics community in a series of open challanges.
+Its objective is to bring the same kind of rigorous public testing that has been used by the machine learning community to the medical genomics community.
+We have applied our approach to the initial phase of the challenge (the ``Consistency'' challenge) and achieve the highest precision of any method which explicitly did not use the truth set in any phase of the submission process.\footnote{There was an entry that achieves 100 \% precision and recall by simply repeating the evlaution set, which was sadly distributed at the beginning of the challenge. Other submissions provide no more than vague reference to a ``ML'' approach used to filter, and do not exclude the use of the truth set for final decision boundary selection.}
+
+Our models base approach achieving the highest precision in the initial challenge (The precision challenge) of an entry that explciitly does not use the evaluation set in its training or paramter tunning 
 %TODO https://precision.fda.gov/comparisons/1030 is problematic since they claim not to be using the test set (for training, i cosen my words crefully nd i assume so did they) 
 
 
@@ -201,13 +207,8 @@ vw -t -i ffoz.model -d vial1l.hhga.gz  18075.76s user 16.10s system 104% cpu 4:4
   \end{tabular}
 \end{table}
 
+% can't do ... maybe we report it -- effect of using "clever" featuranmes for aln relative to just some natural ordering.
 
--- varying ngram length
--- varying aln N
--- varrying 
--- effect of using "clever" featuranmes for aln relative to just some natural ordering.
-
-ideal way to present this is as a matrix, shoudl be doable in terms of using --keep and --ignroe and different a-n iterations of the features.
 
 \section{Generalization}
 
