@@ -270,17 +270,19 @@ These candidate loci are labeled with their genotype status in the NIST Genome i
 
 \section{Learning}
 
+The learning from the data is implemented without explicit regularization penalty. The capacity control is instead achieved by stopping the SGD when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
+The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
+
+
 \begin{equation}
   \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i) 
   \label{eqn:objective}
 \end{equation}
 
-The learning from the data is implemented without explicit regularization penalty, which is instead achieved by stopping the SGD when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
-The main reasoning behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
 %TODO CPU hours for the stage poly?
+Where the feature vector $x$ incudes the different terms presented in the pipeline, 
 
-Error-correcting tournaments where used
-\citep{beygelzimer2009error}, showed better performance in the holdout than the standard one against all reductions. 
+Error-correcting tournaments \citep{beygelzimer2009error} where used , suprisingly given the small number, 7, of classes showed better performance in the holdout than the standard one against all reductions. 
 Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
 
 
@@ -314,19 +316,19 @@ vw -t -i ffoz.model -d vial1l.hhga.gz  18075.76s user 16.10s system 104% cpu 4:4
   \label{ablation-results}
   \begin{tabular}{|l|l|l|l|l|}
     \hline
-    name & binary loss & features & interactions & options \\ \hline
-    3f1c & 0.012204 & s & ss & \\
-    6678 & 0.407825 & r & rr &\\
-    37e4 & 0.016569 & a & & \\
-    7d9d & 0.416780 & h & hh & \\
-    a581 & 0.035268 & k & kk & \\
-    85e8 & 0.024088 & m & mm & \\
-    140f & 0.009975 & ms & mm  ss  ms & \\
-    7a6a & 0.021169 & km & kk  mm  km & \\
-    7a24 & 0.009639 & kms & kk  km  mm  ms  ss & \\
-    0031 & 0.008795 & kmsa & kk  km  mm  ms  ss & \\
-    bd23 & 0.009060 & kmshr & kk  km  mm  ms  ss  hr & \\
-    10d3 & 0.009205 & kmshr & kk  km  mm  ms  ss  hr & ngram 2 \\
+    name & 0-1 loss & feature spaces & interactions & options \\ \hline
+    Software-provided annotations & 0.012204 & s & ss & \\
+    Reference  & 0.407825 & r & rr &\\
+    Read Alleles & 0.016569 & a & & \\
+    Haplotype & 0.416780 & h & hh & \\
+    Variation graph compression & 0.035268 & k & kk & \\
+    Candidate-relative alignment sort & 0.024088 & m & mm & \\
+    Cand. alignment and software & 0.009975 & ms & mm  ss  ms & \\
+    Variation graph and Cand. Align. & 0.021169 & km & kk  mm  km & \\
+    ... and software & 0.009639 & kms & kk  km  mm  ms  ss & \\
+    ... and soft. and reads & 0.008795 & kmsa & kk  km  mm  ms  ss & \\
+    with haplotypes & 0.009060 & kmshr & kk  km  mm  ms  ss  hr & \\
+    ....  & 0.009205 & kmshr & kk  km  mm  ms  ss  hr & ngram 2 \\
     b9fd & 0.009368 & kmshr & kk  km  mm  ms  ss  hr & ngram 3 \\
     431f & 0.008799 & kmshra & kk  km  mm  ms  ss  hr & ngram 2 \\
     4b31 & 0.012261 & kmshr & & stage-poly \\
@@ -380,7 +382,11 @@ Using simple, shallow learners, and leveraging the work that has been applied to
 \section{Further Work}
 incoporating 1000G
 
-\section*{References}
+
+%somehow bring in?
+%Teh et al. (2011); Elliott & Teh (2012) showed that the Dirichlet diffusion tree (Neal, 2003b) is the fragementation-coagulation dual (Pitman, 2006; Bertoin, 2006) of the Kingman coalescent (Kingman, 1982; Teh et al., 2007). The stochastic process introduced therein can be viewed as combining the dual processes in order to model a time-evolving partition of objects. One could investigate if such a dual process exists for the beta diffusion tree or some variant thereof, from which a model for time evolving feature allocations could be obtained.
+
+
 \small
 
 \bibliographystyle{plain}
