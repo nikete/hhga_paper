@@ -42,7 +42,6 @@ Erik Garrison \\
 \maketitle
 
 \begin{abstract}
-Genome sequencing is at the core of t
 
 \end{abstract}
 
@@ -69,12 +68,9 @@ Standard approaches to developing $f$ use Bayesian filters derived from idealize
 It is no longer the case that the best prior available for genome resequencing is one that we derive from first principles. 
 Large scale genomic surveys have sequenced hundreds of thousands of humans, and where possible have deposited results into the public domain \cite{1000Gphase1, 1000g2015, exac2015, cavalli2005human, uk10k2015uk10k}.
 The NIST Genome in a Bottle consortium \cite{zook2014integrating} has developed a reference standard for genome resequencing based around NA12878 (a cell line derived from a HapMap participant \cite{gibbs2003international}), which provides an accurate set of labeled data for the evaluation of genomic analyses.
-Here, we develop a model capable of using these resources to learn a general model for genotyping.
-%To utilize this rapidly-deepening catalog of variation in a new individuals, we built a supervised learning task to genotype by example.
-% this has been attempted before, as in GATK VQSR or SNPsvm TODO: cites? do we beat VQSR?
-%To attack this task we develop a novel set of feature representations, use the complementary strengths of two variant callers,  achieving state of the art performance.
+Here, we develop a method to transform $S$ into a suitable feature space representation for efficient learning of $f$ and demonstrate the utility of our method by application to a public genomics challenge.
 
-% The system trained in this way, using the complementary strengths of two variant callers, freebayes and fermkit, combined with a novel set of feature representations inspired by genomic debugging tools and graphical reductions of genome variation
+%To utilize this rapidly-deepening catalog of variation in a new individuals, we built a supervised learning task to genotype by example.
 
 %President Obama’s Precision Medicine Initiative envisions a day when an individual's medical care will be tailored in part based on their unique characteristics and genetic make-up.
 %The goal of the FDA's first precisionFDA challenge is to engage the genomics community in advancing the quality standards in order to achieve more consistent results in the context of genetic tests (related to whole human genome sequencing), advancing the goal of better personalized care.
@@ -89,45 +85,43 @@ We have applied our approach to the initial phase of the challenge (the ``Consis
 %TODO https://precision.fda.gov/comparisons/1030 is problematic since they claim not to be using the test set (for training, i cosen my words crefully nd i assume so did they) 
 
 
-We require a corpus of examples of sequencing data from genomic loci where we have a strong estimate of the actual genome state. %TODO: edit flow with upper part
+%We require a corpus of examples of sequencing data from genomic loci where we have a strong estimate of the actual genome state. %TODO: edit flow with upper part
 % this is available in NIST genome in a bottle
 % background of problem
 % history: 1000G, data formats, NIST
 % current approaches 
 % reference guided: bwa / aligners -> samtools, freebayes, platypus, GATK % assembly based: cortex, sga, fermikit
- similar techniques: GATK's VQSR (variant quality score recalibration) and SNPSVM (mention), but not a challenge particpant)
+% similar techniques: GATK's VQSR (variant quality score recalibration) and SNPSVM (mention), but not a challenge particpant)
 % VSQR provide rough idea of what is different http://gatkforums.broadinstitute.org/gatk/discussion/39/variant-quality-score-recalibration-vqsr
-The performance is comparable to that achieved by GATK with the recomended methodology; it offers several adavantges; libre, much smaller human effort, tunable to new sequencing tenchnologies (TODO: so is GATK's VQSR ...) 
+%The performance is comparable to that achieved by GATK with the recomended methodology; it offers several adavantges; libre, much smaller human effort, tunable to new sequencing tenchnologies (TODO: so is GATK's VQSR ...) 
 
 The literature on genotyping is vast, and a full review of it is outside the scope of this paper.
 Within the NIPS comunity \cite{teh2011modelling}, develop Bayesian nonparametric models for sequential data, the fragmentation-coagulation processes (FCPs), and a discrete time variant that mantains perofrmance while being more scalable. \cite{elliott2012scalable}
-% its equilibrium distributions are given by the Chinese restaurant,  avoid label switching non-identifiability problems develop an efficient Gibbs sampler for FCP motivated by applications in population genetics, and we demonstrate the utility of FCPs on problems of genotype imputation with phased and unphased SNP data
 %http://papers.nips.cc/paper/4782-scalable-imputation-of-genetic-data-with-a-discrete-fragmentation-coagulation-process
-%We present a Bayesian nonparametric model for genetic sequence data in which a set of genetic sequences is modelled using a Markov model of partitions. The partitions at consecutive locations in the genome are related by their clusters first splitting and then merging. Our model can be thought of as a discrete time analogue of continuous time fragmentation-coagulation processes [Teh et al 2011], preserving the important properties of projectivity, exchangeability and reversibility, while being more scalable. We apply this model to the problem of genotype imputation, showing improved computational efficiency while maintaining the same accuracies as in [Teh et al 2011].
 In contrast, we take a discriminative instead of generative approach, and show that existing techniques as developed for large scale classification tasks can achieve state of the art performance when used with apropiately constructed features. 
 As far as the methods have been described, none of the submissions to the FDA challenge so far appear to explicitly use these methods, nor come from groups that do so.
 
-The discriminative approach has been used before in the inersection of machine learning and genomics, notably the Pascal learning challenge included a classficication task based on dna split point detection.
+The discriminative approach has been used before in the intersection of machine learning and genomics, notably the Pascal learning challenge included a classficication task based on dna split point detection.
 In contrast to that challenge that used a small set of 200 features, we explore models with up to hundreds of thousands of non-zero features per sample.
-Further, the methods presented here are evauated not only in terms of performance metrics on the derived classification task, but rather as whole systems in open competition with custom designed software for the task that embodies hundreds of human years of labor TODO: cite gatk effort? jsutify this claim somehow.
+Further, the methods presented here are evauated not only in terms of performance metrics on the derived classification task, but rather as whole systems in open competition with custom designed software for the task that embodies dozens of human years of labor.
 
 %Teh et al. (2011); Elliott & Teh (2012) showed that the Dirichlet diffusion tree (Neal, 2003b) is the fragementation-coagulation dual (Pitman, 2006; Bertoin, 2006) of the Kingman coalescent (Kingman, 1982; Teh et al., 2007). The stochastic process introduced therein can be viewed as combining the dual processes in order to model a time-evolving partition of objects. One could investigate if such a dual process exists for the beta diffusion tree or some variant thereof, from which a model for time evolving feature allocations could be obtained.
 
-TODO: how related is this? \cite{kirkpatrick2012bayesian} % http://papers.nips.cc/paper/4602-bayesian-pedigree-analysis-using-measure-factorization
-more broadly the " gene expression microarrays, " task % https://scholar.google.cz/scholar?q=gene&btnG=&hl=en&as_sdt=2005&sciodt=0%2C5&cites=15503184557873643836&scipsc=1
+%TODO: how related is this? \cite{kirkpatrick2012bayesian} % http://papers.nips.cc/paper/4602-bayesian-pedigree-analysis-using-measure-factorization
+%more broadly the " gene expression microarrays, " task % https://scholar.google.cz/scholar?q=gene&btnG=&hl=en&as_sdt=2005&sciodt=0%2C5&cites=15503184557873643836&scipsc=1
 
 
 %Application papers should describe your work on a "real" as opposed to "hypothetical" application; specifically, it should describe work that has direct relevance to, and addresses the full complexity of, solving a non-trivial problem. Authors are also encouraged to convey insight about the problem, algorithms, and/or application
 
 % elucidate (through an ablative analysis/lesion analysis, which removes one component of an algorithm at a time) which were the key components of the system needed to get the application to work. 
-The features provided by the two underlying aligners, combined with features that characterize the alignmnt itself, can be used to make a a good genotyper.
+%The features provided by the two underlying aligners, combined with features that characterize the alignmnt itself, can be used to make a a good genotyper.
 
 
 
 %A NIPS application paper should be comparable in quality to paper in the corresponding application domain conference: for example, a text paper should be acceptable to SIGIR, EMNLP, or other appropriate conference Application papers should not only present concrete application results, but also contain at least one of the below elements:
 
 %Applications that couldn't previously be done, at all, or on this scale
-TODO can we argue somethign of what we are doing could be done before? at least not with libre software? or possibly theres some way to argue this.
+%TODO can we argue somethign of what we are doing could be done before? at least not with libre software? or possibly theres some way to argue this.
 
 
 %Techniques shown to be uniquely fitted to specific popular applications, leading to improved performance or more accurate solutions
@@ -311,36 +305,41 @@ The main reason behind this choice was to avoid hyper-parameter tuning given the
 %TODO CPU hours for the stage poly?
 %Where the feature vector $x$ incudes the different terms presented in the pipeline, 
 
-Error-correcting tournaments \citep{beygelzimer2009error} where used , suprisingly given the small number, 7, of classes showed better performance in the holdout than the standard one against all reductions. 
 Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
-
 
 
 \section{Results}
 
-The best model achieved the highest precision submission ( 99.57\%) among those that explicitly don't use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate file submitted as well as several methods whose performance is unbelievably good}
-The table bellow presents a range of models to provide a sense of the importance of the different features used.
-The loss is reported on held out regions of the genome. TODO: ref why
+Table \ref{tab:ablate} presents a range of models to provide a sense of the importance of the different features used.
+We report loss on large held out regions of the genome (100/827 regions are held out), as this is the best-available proxy for another individual until the projected release of the second NIST truth set in late May 2016.
+Our objective with this holdout strategy is to develop intuition about generalization across different individuals.
+All experiments were carried out using the synchronous cluster mode for VW using either 30 or 300 concurrent learners.
 
+We expect the reference and candidate allele features to provide little generalization ability to new regions of the genome, which is held out by the results.
+Software level annotations provide a compact and discriminant representation of $S$.
+The alignments alone provide sufficient power to achieve 1.7\% error, which is similar to the error rates achieved by {\tt freebayes}, {\tt fermikit}, and other Bayesian variant callers.
+The variation graph compression is vastly more compact than the alignment feature with an average of 2 vs 1000s of non-zero features per example, but achieves only slightly worse performance, perhaps because it cannot capture context specific errors which are evidenced by certain motifs in the alignments \cite{nakamura2011sequence}.
+
+%The best performance is achieved by using 
 
 \begin{table}[]
   \centering
   \caption{Baselines \& Ablations }
-  \label{ablation-results}
+  \label{tab:ablate}
   \begin{tabular}{|l|l|l|l|l|}
     \hline
     name & 0/1 loss & feature spaces & interactions & options \\ \hline
     Software-provided annotations & 0.012204 & s & ss & \\
     Reference  & 0.407825 & r & rr &\\
-    Alleles read & 0.016569 & a & & \\
-    Haplotype & 0.416780 & h & hh & \\
+    Alignments & 0.016569 & a & & \\
+    Allele & 0.416780 & h & hh & \\
     Variation graph compression & 0.035268 & k & kk & \\
-    Candidate-relative alignment sort & 0.024088 & m & mm & \\
-    Cand. alignment and software & 0.009975 & ms & mm  ss  ms & \\
+    Candidate-relative alignment match & 0.024088 & m & mm & \\
+    Match and software & 0.009975 & ms & mm  ss  ms & \\
     Variation graph and Cand. Align. & 0.021169 & km & kk  mm  km & \\
     ... and software & 0.009639 & kms & kk  km  mm  ms  ss & \\
     ... and soft. and reads & 0.008795 & kmsa & kk  km  mm  ms  ss & \\
-    with haplotypes & 0.009060 & kmshr & kk  km  mm  ms  ss  hr & \\
+    with alleles & 0.009060 & kmshr & kk  km  mm  ms  ss  hr & \\
     .... 2-grams  & 0.009205 & kmshr & kk  km  mm  ms  ss  hr & ngram 2 \\
     ... 3-grams & 0.009368 & kmshr & kk  km  mm  ms  ss  hr & ngram 3 \\
     ... alle reads and 2 grams  & 0.008799 & kmshra & kk  km  mm  ms  ss  hr & ngram 2 \\
