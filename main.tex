@@ -297,20 +297,27 @@ Furthermore, we achieve the highest precision of any group that explicitly did n
 \section{Learning}
 \label{sec:learning}
 
-The learning from the data is implemented without explicit regularization penalty.
+
+The learning is carried out with feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable}
+
+Each of the variables in the feature sets implemented above along with a quadratic terms for their values, and a set of cross interactions where, as well as 2-grams over the sequence like features  is included in a vector $x$.
+The hashing trick is used to carry out the projection.
+Stochastic gradient descent then optimizes a set of weights $w$ so as to:
+
+\begin{equation}
+  \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i)
+  \label{eqn:objective}
+\end{equation}
+
+Note that this is without any explicit regularization penalty.
 Capacity control is instead carried out by stopping the iterations of the gradient descent when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
-The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
+For the very largest models (those that include quadratic features of the allele reads) the saturation of the hash space also potentially provides a for of capacity control.
+The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models (thousands of CPU core hours).
 
+Error-correcting tournaments \citep{beygelzimer2009error} where used,  despite the small number of classes, this showed better performance in the holdout than the standard one against all reductions in our initial experiments.
+Comparisons of our final models show that the performance with respect to the more standard one is withing 0.01\% of each other on binary loss.
 
-%\begin{equation}
-%  \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i) 
-%  \label{eqn:objective}
-%\end{equation}
-
-%TODO CPU hours for the stage poly?
-%Where the feature vector $x$ incudes the different terms presented in the pipeline, 
-
-Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
+%Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
 
 
 \section{Results}
