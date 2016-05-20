@@ -181,6 +181,9 @@ The human-driven assertion that the site was ``good'' or ``bad'' based on the ap
 Following this inspiration, we designed a feature representation that retains all relevant features of $S$.
 We implement this transformation in a software tool that consumes alignments (in BAM format), candidate variants (in VCF format), a window size parameter $w$, and a maximum depth $d$ to produce a feature representation for each candidate containing a description of: the reference genome; candidate alleles from the VCF file; alignments and their matches to the candidate alleles and reference; software provided annotations from the VCF file; and a novel compression of the sequencing data against a sequence graph implied by the variant record.
 
+Figure \ref{fig:indel} provides a visual explanation of the relevant parts of our feature space transformation, which we describe here in detail.
+
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=1.0\textwidth]{indel}
@@ -264,6 +267,18 @@ We then collect reads that map within a larger window $g : g > w$ around the cen
 As we aim to obtain a relativistic description of the strength of match between the alignments and the specific alleles at the locus, we ignore any edits in the alignments.
 We then count the number of alignments mapping to each allele node, and normalize these counts by the total number of alignments mapping to any allele node.
 This results in a weight $k$ for each allele node such that $k_i \in [0, 1] \forall n_i \in N$ and $\sum_{i = 0}^{|A|} k_i = 1$, which we provide in the feature representation.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graphaln}
+\caption{\label{fig:graphaln}
+  A representation of the alignment of 5 reads to the variation graph in figure \ref{fig:indel}.
+  Nodes 100 and 101 are the flanking reference nodes, while nodes 201 and 202 are the candidate allele nodes.
+  Sequences are not shown.
+  The color of the nodes indicates the quality of the match in the alignnment for that node in the graph, with green representing good matches and lighter colors representing poorer matches.
+  In this case 3 reads map to node 202 and 2 reads map to node 201, so we would derive a representation of this data as 201N:0.6 202N:0.4 in our feature space.
+}
+\end{figure}
 
 \subsection{Application to PrecisionFDA Consistency Challenge}
 
