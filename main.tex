@@ -87,8 +87,6 @@ Here, we develop a model capable of using these resources to learn a general mod
 The PrecisionFDA challenge is a publicly-funded initiative to improve the quality and consistency of genetic tests through the engagement of the genomics community in a series of open challanges.
 Its objective is to bring the same kind of rigorous public testing that has been used by the machine learning community to the medical genomics community.
 We have applied our approach to the initial phase of the challenge (the ``Consistency'' challenge) and achieve the highest precision of any method which explicitly did not use the truth set in any phase of the submission process.\footnote{There was an entry that achieves 100 \% precision and recall by simply repeating the evlaution set, which was sadly distributed at the beginning of the challenge. Other submissions provide no more than vague reference to a ``ML'' approach used to filter, and do not exclude the use of the truth set for final decision boundary selection.}
-
-Our models base approach achieving the highest precision in the initial challenge (The precision challenge) of an entry that explciitly does not use the evaluation set in its training or paramter tunning 
 %TODO https://precision.fda.gov/comparisons/1030 is problematic since they claim not to be using the test set (for training, i cosen my words crefully nd i assume so did they) 
 
 
@@ -101,6 +99,23 @@ We require a corpus of examples of sequencing data from genomic loci where we ha
  similar techniques: GATK's VQSR (variant quality score recalibration) and SNPSVM (mention), but not a challenge particpant)
 % VSQR provide rough idea of what is different http://gatkforums.broadinstitute.org/gatk/discussion/39/variant-quality-score-recalibration-vqsr
 The performance is comparable to that achieved by GATK with the recomended methodology; it offers several adavantges; libre, much smaller human effort, tunable to new sequencing tenchnologies (TODO: so is GATK's VQSR ...) 
+
+The literature on genotyping is vast, and a full review of it is outside the scope of this paper.
+Within the NIPS comunity \cite{teh2011modelling}, develop Bayesian nonparametric models for sequential data, the fragmentation-coagulation processes (FCPs), and a discrete time variant that mantains perofrmance while being more scalable. \cite{elliott2012scalable}
+% its equilibrium distributions are given by the Chinese restaurant,  avoid label switching non-identifiability problems develop an efficient Gibbs sampler for FCP motivated by applications in population genetics, and we demonstrate the utility of FCPs on problems of genotype imputation with phased and unphased SNP data
+%http://papers.nips.cc/paper/4782-scalable-imputation-of-genetic-data-with-a-discrete-fragmentation-coagulation-process
+%We present a Bayesian nonparametric model for genetic sequence data in which a set of genetic sequences is modelled using a Markov model of partitions. The partitions at consecutive locations in the genome are related by their clusters first splitting and then merging. Our model can be thought of as a discrete time analogue of continuous time fragmentation-coagulation processes [Teh et al 2011], preserving the important properties of projectivity, exchangeability and reversibility, while being more scalable. We apply this model to the problem of genotype imputation, showing improved computational efficiency while maintaining the same accuracies as in [Teh et al 2011].
+In contrast, we take a discriminative instead of generative approach, and show that existing techniques as developed for large scale classification tasks can achieve state of the art performance when used with apropiately constructed features. 
+As far as the methods have been described, none of the submissions to the FDA challenge so far appear to explicitly use these methods, nor come from groups that do so.
+
+The discriminative approach has been used before in the inersection of machine learning and genomics, notably the Pascal learning challenge included a classficication task based on dna split point detection.
+In contrast to that challenge that used a small set of 200 features, we explore models with up to hundreds of thousands of non-zero features per sample.
+Further, the methods presented here are evauated not only in terms of performance metrics on the derived classification task, but rather as whole systems in open competition with custom designed software for the task that embodies hundreds of human years of labor TODO: cite gatk effort? jsutify this claim somehow.
+
+%Teh et al. (2011); Elliott & Teh (2012) showed that the Dirichlet diffusion tree (Neal, 2003b) is the fragementation-coagulation dual (Pitman, 2006; Bertoin, 2006) of the Kingman coalescent (Kingman, 1982; Teh et al., 2007). The stochastic process introduced therein can be viewed as combining the dual processes in order to model a time-evolving partition of objects. One could investigate if such a dual process exists for the beta diffusion tree or some variant thereof, from which a model for time evolving feature allocations could be obtained.
+
+TODO: how related is this? \cite{kirkpatrick2012bayesian} % http://papers.nips.cc/paper/4602-bayesian-pedigree-analysis-using-measure-factorization
+more broadly the " gene expression microarrays, " task % https://scholar.google.cz/scholar?q=gene&btnG=&hl=en&as_sdt=2005&sciodt=0%2C5&cites=15503184557873643836&scipsc=1
 
 
 %Application papers should describe your work on a "real" as opposed to "hypothetical" application; specifically, it should describe work that has direct relevance to, and addresses the full complexity of, solving a non-trivial problem. Authors are also encouraged to convey insight about the problem, algorithms, and/or application
@@ -152,6 +167,7 @@ TODO: add description of how the different featurespaces we keep are constructed
 The learning from the data is implemented without explicit regularization penalty, which is instead achieved by stopping the SGD when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
 The main reasoning behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
 %TODO CPU hours for the stage poly?
+
 Error-correcting tournaments where used
 \citep{beygelzimer2009error}, showed better performance in the holdout than the standard one against all reductions. 
 Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
@@ -160,7 +176,7 @@ Feature hashing and stochastic gradient descent using adaptive normalized and in
 
 \section{Results}
 
-Highest precision submission among those that explicitly dont use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate fiel submitte,d as well as several methods whose peroformance is unbelievably good TODO: show more explcitily why t is implausible, and where the degree to which the adjustments are tuned to roduce good results in the evaluation set is left unsaid.}
+Highest precision submission among those that explicitly dont use the test set in their learning or tuning.\footnote{ Without this restriction there is a completely accurate fiel submitte,d as well as several methods whose peroformance is unbelievably good TODO: show more explcitily why t is implausible, and where the degree to which the adjustments are tuned to produce good results in the evaluation set is left unsaid.}
 
 \subsection{Baseline}
  
@@ -246,7 +262,8 @@ so it's hard to claim they are independent
 
 \section{Conclusion}
 
-using simple learners and leveraging of tools currently applied to the task to automate remaning parts
+Using simple, shallow learners, and leveraging the work that has been applied to large scale classification tasks combined with handcrafted feature representations, we show state of the art performance in genotyping task.
+
 
 
 \section{Further Work}
