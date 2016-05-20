@@ -27,7 +27,7 @@
 
 
 
-\title{Learning to gentoype}
+\title{Learning to gentoype with SGD and linear models}
 
 \author{
 Nicol\'as Della Penna
@@ -42,7 +42,7 @@ Erik Garrison \\
 \maketitle
 
 \begin{abstract}
-
+Genome sequencing is at the core of t
 
 \end{abstract}
 
@@ -283,17 +283,18 @@ Furthermore, we achieve the highest precision of any group that explicitly did n
 \section{Learning}
 \label{sec:learning}
 
-The learning from the data is implemented without explicit regularization penalty. The capacity control is instead achieved by stopping the SGD when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
+The learning from the data is implemented without explicit regularization penalty.
+Capacity control is instead carried out by stopping the iterations of the gradient descent when the holdout error rate is not reduced over three iterations \citep{hardt2015train}.
 The main reason behind this choice was to avoid hyper-parameter tuning given the computational cost of fitting the richer models.
 
 
-\begin{equation}
-  \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i) 
-  \label{eqn:objective}
-\end{equation}
+%\begin{equation}
+%  \min_{\w \in \R^d}~~\sum_{i=1}^n\ell(\w^\tr\x_i;\,y_i) 
+%  \label{eqn:objective}
+%\end{equation}
 
 %TODO CPU hours for the stage poly?
-Where the feature vector $x$ incudes the different terms presented in the pipeline, 
+%Where the feature vector $x$ incudes the different terms presented in the pipeline, 
 
 Error-correcting tournaments \citep{beygelzimer2009error} where used , suprisingly given the small number, 7, of classes showed better performance in the holdout than the standard one against all reductions. 
 Feature hashing and stochastic gradient descent using adaptive normalized and invariant update scheme as implemented in Vowpal Wabbit \cite{mcmahan2010adaptive, duchi2011adaptive, agarwal2014reliable} 
